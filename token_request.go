@@ -17,10 +17,12 @@ type SpotifyToken struct {
 	RefreshToken string `json:"refresh_token"`
 }
 
-func (cfg *ApiConfig) tokenRequest() (SpotifyToken, error) {
+func (cfg *ApiConfig) tokenRequest(authCode string) (SpotifyToken, error) {
 	requestURL := "https://accounts.spotify.com/api/token"
 	formData := url.Values{}
 	formData.Set("grant_type", cfg.grantType)
+	formData.Set("code", authCode)
+	formData.Set("redirect_uri", cfg.redirectURI)
 
 	req, err := http.NewRequest(
 		http.MethodPost,
@@ -40,6 +42,10 @@ func (cfg *ApiConfig) tokenRequest() (SpotifyToken, error) {
 		return SpotifyToken{}, fmt.Errorf("error requesting token: %v", err)
 	}
 	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return SpotifyToken{}, fmt.Errorf("token request failed with status: %s", resp.Status)
+	}
 
 	var spotifyToken SpotifyToken
 	if err := json.NewDecoder(resp.Body).Decode(&spotifyToken); err != nil {
