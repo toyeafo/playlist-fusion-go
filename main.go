@@ -53,8 +53,8 @@ func main() {
 		spotifyClientID: spotifyClientID,
 		spotifySecret:   spotifySecret,
 		grantType:       "authorization_code",
-		redirectURI:     "http://127.0.0.1:8888/callback",
-		scope:           "user-read-private user-read-email",
+		redirectURI:     "http://127.0.0.1:8000/callback",
+		scope:           "user-library-read playlist-read-private playlist-read-collaborative",
 		responseType:    "code",
 	}
 

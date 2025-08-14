@@ -25,7 +25,4 @@ func browserAuth(url string) {
 	if err != nil {
 		log.Fatalf("could not open browser: %v", err)
 	}
-
-	fmt.Println("Please log into Spotify by visiting this URL in your browser:")
-	fmt.Println(url)
 }
