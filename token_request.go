@@ -20,7 +20,7 @@ type SpotifyToken struct {
 func (cfg *ApiConfig) tokenRequest(authCode string) (SpotifyToken, error) {
 	requestURL := "https://accounts.spotify.com/api/token"
 	formData := url.Values{}
-	formData.Set("grant_type", cfg.grantType)
+	formData.Set("grant_type", "authorization_code")
 	formData.Set("code", authCode)
 	formData.Set("redirect_uri", cfg.redirectURI)
 

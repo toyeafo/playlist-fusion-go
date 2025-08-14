@@ -5,20 +5,12 @@ import (
 	"net/http"
 )
 
-func (cfg *ApiConfig) callBackHandler(w http.ResponseWriter, r *http.Request) {
+var authChan = make(chan SpotifyAuth)
 
-	code := r.URL.Query().Get("code")
-	state := r.URL.Query().Get("state")
-
-	if state != cfg.spotifyAuth.state {
-		http.Error(w, "State mismatch: Possible CSRF attack", http.StatusBadRequest)
-		return
-	}
-
-	_, err := cfg.tokenRequest(code)
-	if err != nil {
-		http.Error(w, "Failed to get access token", http.StatusInternalServerError)
-		return
+func callBackHandler(w http.ResponseWriter, r *http.Request) {
+	authChan <- SpotifyAuth{
+		code:  r.URL.Query().Get("code"),
+		state: r.URL.Query().Get("state"),
 	}
 
 	fmt.Fprintf(w, "Authentication successful! Window can be closed")

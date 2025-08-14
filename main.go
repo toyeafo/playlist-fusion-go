@@ -1,14 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"log"
-	"net/http"
 	"os"
 
 	"github.com/joho/godotenv"
 )
-
-const redirectURI string = "http://127.0.0.1:8888/callback"
 
 type SpotifyAuth struct {
 	code  string
@@ -26,6 +24,8 @@ type ApiConfig struct {
 	responseType    string
 	json            bool
 	spotifyAuth     SpotifyAuth
+	accessToken     string
+	refreshToken    string
 }
 
 func main() {
@@ -52,16 +52,16 @@ func main() {
 	cfg := &ApiConfig{
 		spotifyClientID: spotifyClientID,
 		spotifySecret:   spotifySecret,
-		grantType:       "client_credentials",
-		redirectURI:     redirectURI,
+		grantType:       "authorization_code",
+		redirectURI:     "https://127.0.0.1:8888/callback",
 		scope:           "user-read-private user-read-email",
+		responseType:    "code",
 	}
 
-	// result, err := cfg.tokenRequest()
-	// if err != nil {
-	// 	log.Fatalf("error requesting token: %v", err)
-	// }
-	// fmt.Println(result)
-	http.HandleFunc("/callback", cfg.callBackHandler)
-	log.Fatal(http.ListenAndServe(":8888", nil))
+	token, err := cfg.getAccessToken()
+	if err != nil {
+		log.Fatalf("authentication failed: %v", err)
+	}
+
+	fmt.Printf("Access Token: %s", token.AccessToken)
 }
